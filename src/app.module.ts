@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
+import { AppointmentModule } from './appointment/appointment.module.js';
 
 
 @Module({
-  imports: [],
+  imports: [AppointmentModule],
   controllers: [],
   providers: [],
 })
