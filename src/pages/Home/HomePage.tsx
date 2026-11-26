@@ -1,3 +1,4 @@
+import FilterComponent from "../../components/filterComponent/filterComponent";
 import HeaderComponent from "../../components/headerComponent/headerComponent";
 import style from "./home.module.css";
 
@@ -14,7 +15,8 @@ export default function HomePage() {
             </div>
         </div>
 
-        
+        <FilterComponent/>
+
     </>
  )   
 }
