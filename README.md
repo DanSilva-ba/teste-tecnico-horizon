@@ -118,10 +118,46 @@ A migração `20261126090000_seed_appointments` insere 70 consultas com datas **
 
 ## Rotas
 
-| Método e rota | Descrição |
-|---|---|
-| `GET /appointment` | Lista todas as consultas |
-| `POST /appointment` | Agenda uma consulta |
-| `PUT /appointment` | Altera o status. Corpo: `{ id, status }` |
-| `DELETE /appointment/:id` | Exclui uma consulta |
+Base: `http://localhost:3000`
 
+| Método e rota | Descrição | Corpo |
+|---|---|---|
+| `GET /appointment` | Lista todas as consultas | — |
+| `POST /appointment` | Agenda uma consulta | `{ patientName, patientCpf, appointmentDateAndTime, specialty, observations? }` |
+| `PUT /appointment/:id` | Edita os dados de uma consulta | `{ patientName?, patientCpf?, appointmentDateAndTime?, specialty?, observations? }` |
+| `PUT /appointment` | Altera o status (`REALIZADA` ou `CANCELADA`) | `{ id, status }` |
+| `PUT /appointment/rescheduleAppointment` | Remarca uma consulta | `{ id, date }` |
+| `DELETE /appointment/:id` | Exclui uma tupla do banco | — |
+
+- As datas (`appointmentDateAndTime` e `date`) devem estar no formato ISO 8601, por exemplo `2026-12-20T13:00:00.000Z`.
+- O CPF pode ser enviado com ou sem máscara. Ele é salvo só com os dígitos.
+- Na edição, campos não enviados mantêm o valor atual. O status não é alterado por essa rota.
+
+### Exemplo de resposta
+
+Todas as rotas, exceto a listagem, devolvem a consulta neste formato. A listagem devolve um array deles.
+
+```json
+{
+  "id": 1,
+  "patientName": "Maria Silva",
+  "patientCpf": "12345678909",
+  "appointmentDate": "2026-12-20T13:00:00.000Z",
+  "specialty": "Cardiologia",
+  "observations": "Primeira consulta.",
+  "status": "AGENDADA",
+  "createdAt": "2026-11-26T10:00:00.000Z",
+  "updatedAt": "2026-11-26T10:00:00.000Z"
+}
+```
+
+### Erros
+
+Os erros seguem o formato padrão do Nest: `{ statusCode, error, message }`.
+
+| Status | Quando acontece |
+|---|---|
+| `400` | `id` inválido na URL (não numérico) |
+| `404` | Consulta não encontrada |
+| `409` | O paciente já tem uma consulta agendada nesse horário |
+| `422` | Data anterior ao momento atual, tentativa de alterar uma consulta REALIZADA ou CANCELADA, ou de marcar como REALIZADA fora do dia da consulta |

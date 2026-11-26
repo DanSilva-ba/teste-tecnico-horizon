@@ -55,7 +55,7 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryAbs {
     }
 
     async findAppointmentByPatientCpfAndAppointmentDate(data: AppointmentCreateInput): Promise<Appointment | null> {
-        const response = await this.prismaService.appointment.findFirst({where: {patientCpf: data.patientCpf, appointmentDate: data.appointmentDate}});
+        const response = await this.prismaService.appointment.findFirst({where: {patientCpf: data.patientCpf, appointmentDate: new Date(data.appointmentDate)}});
         return response;
     }
 

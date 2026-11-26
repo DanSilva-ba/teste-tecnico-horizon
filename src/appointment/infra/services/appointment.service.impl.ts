@@ -17,8 +17,17 @@ import { RescheduleAppointment } from "../../domain/dtos/reschedule.appointment.
 export class AppointmentServiceImpl implements AppointmentServiceAbs{
     constructor(private appointmentRepository: AppointmentRepositoryAbs, private appointmentMapper: AppointmentMapper){}
 
-    async rescheduleAppointment(param: RescheduleAppointment): Promise<AppointmentResponseDTO> {
-        return this.appointmentMapper.toResponse(await this.appointmentRepository.rescheduleAppointment(param))
+
+    ////// reagenda a consulta
+   async rescheduleAppointment(param: RescheduleAppointment): Promise<AppointmentResponseDTO> {
+        const appointment = await this.appointmentRepository.findById(param.id);
+        if (appointment.status !== 'AGENDADA') throw new AppointmentNotEditableException(appointment.status);
+
+        const newDate = new Date(param.date);
+        if (newDate < new Date()) throw new RetroactiveDateException(newDate);
+
+        const updated = await this.appointmentRepository.rescheduleAppointment({ ...param, date: newDate.toISOString() });
+        return this.appointmentMapper.toResponse(updated);
     }
 
     async updateAppointmentById(param: UpdateAppointment): Promise<AppointmentResponseDTO> {
@@ -52,15 +61,18 @@ export class AppointmentServiceImpl implements AppointmentServiceAbs{
 
     ///////Realiza um novo agendamento
     async scheduleAppointment(param: ScheduleAppointmentDTO): Promise<AppointmentResponseDTO> {
-        const responseDate = await this.appointmentRepository.findAppointmentByPatientCpfAndAppointmentDate(this.appointmentMapper.toDomain(param))
-        //////// condição para evitar duplicidade de agendamento 
-        if(responseDate){
-                throw new DuplicateAppointmentException(responseDate.patientCpf, responseDate.appointmentDate);
+        if (param.appointmentDateAndTime < new Date()) {
+            throw new RetroactiveDateException(param.appointmentDateAndTime);
         }
-        //////// condição para verificar se a data de agendamento é retroativa
-        if(param.appointmentDateAndTime < param.createdAt) {
-            throw new RetroactiveDateException(param.appointmentDateAndTime, param.createdAt);
+
+        const appointment = this.appointmentMapper.toDomain(param);
+
+        const existing = await this.appointmentRepository.findAppointmentByPatientCpfAndAppointmentDate(appointment);
+        if (existing) {
+            throw new DuplicateAppointmentException(existing.patientCpf, existing.appointmentDate);
         }
-        return await this.appointmentMapper.toResponse(await this.appointmentRepository.create(this.appointmentMapper.toDomain(param)));
+
+        const created = await this.appointmentRepository.create(appointment);
+        return this.appointmentMapper.toResponse(created);
     }
 }

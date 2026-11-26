@@ -23,8 +23,8 @@ model Appointment {
   patientName     String            @db.VarChar(150)
   patientCpf      String            @db.Char(11)
   appointmentDate DateTime          @db.Timestamptz(6)
-  specialty       String            @db.VarChar(255)
-  notes           String?           @db.Text
+  specialty       String            @db.VarChar(100)
+  notes           String?           @db.VarChar(1000)
   status          AppointmentStatus @default(AGENDADA)
   createdAt       DateTime          @default(now()) @db.Timestamptz(6)
   updatedAt       DateTime          @updatedAt @db.Timestamptz(6)

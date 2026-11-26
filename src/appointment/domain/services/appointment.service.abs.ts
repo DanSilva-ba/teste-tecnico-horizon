@@ -1,4 +1,4 @@
-import type { ScheduleAppointmentDTO } from "../dtos/appointment.js";
+import { ScheduleAppointmentDTO } from "../dtos/appointment.js";
 import { AppointmentResponseDTO } from "../dtos/appointment.response.js";
 import { RescheduleAppointment } from "../dtos/reschedule.appointment.js";
 import { UpdateAppointment } from "../dtos/update.appointment.js";
