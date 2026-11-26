@@ -31,7 +31,7 @@ const SUBMIT_LABELS: Record<FormMode, string> = {
 function initialValues(appointment?: Appointment): AppointmentFormValues {
   return {
     patientName: appointment?.patientName ?? '',
-    patientCpf: appointment?.patientCpf ?? '',
+    patientCpf: maskCpf(appointment?.patientCpf ?? ''),
     appointmentDate: appointment ? toInputValue(appointment.appointmentDate) : '',
     specialty: appointment?.specialty ?? '',
     observations: appointment?.observations ?? '',

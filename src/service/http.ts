@@ -1,4 +1,4 @@
-const BASE_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const BASE_URL: string = import.meta.env.VITE_API_URL ?? '/api'
 
 const FALLBACK_BY_STATUS: Record<number, string> = {
   400: 'Os dados enviados são inválidos. Revise o formulário e tente novamente.',
@@ -28,7 +28,6 @@ export function getErrorMessages(error: unknown): string[] {
 }
 
 function extractMessages(body: unknown, status: number): string[] {
-  // Erros 5xx nunca expõem detalhes do servidor.
   if (status >= 500) return [SERVER_ERROR]
   if (body && typeof body === 'object' && 'message' in body) {
     const { message } = body as { message: unknown }

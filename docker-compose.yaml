@@ -1,0 +1,16 @@
+services:
+  web:
+    container_name: agendamento-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+    environment:
+      # Backend na porta 3000 do computador (rodando via Docker ou via terminal)
+      API_URL: ${API_URL:-http://host.docker.internal:3000}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    extra_hosts:
+      # Garante que host.docker.internal exista também no Linux
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

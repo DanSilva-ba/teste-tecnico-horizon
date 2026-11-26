@@ -9,7 +9,7 @@ interface FilterProps {
 
 const STATUS_TABS: { value: AppointmentFilters['status']; label: string }[] = [
   { value: 'ALL', label: 'Todas' },
-  ...(['SCHEDULED', 'COMPLETED', 'CANCELED'] as AppointmentStatus[]).map((s) => ({
+  ...(['AGENDADA', 'REALIZADA', 'CANCELADA'] as AppointmentStatus[]).map((s) => ({
     value: s,
     label: `${STATUS_LABEL[s]}s`,
   })),
@@ -20,7 +20,6 @@ const SEARCH_DEBOUNCE_MS = 400
 export default function FilterComponent({ filters, onChange }: FilterProps) {
   const [searchText, setSearchText] = useState(filters.search)
 
-  // Só avisa a página depois que o usuário para de digitar, evitando uma busca por tecla.
   useEffect(() => {
     if (searchText === filters.search) return
     const timer = window.setTimeout(

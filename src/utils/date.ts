@@ -18,18 +18,21 @@ export function isPastInput(value: string): boolean {
   return new Date(value).getTime() < Date.now()
 }
 
+
+const BRASILIA_TIMEZONE = 'America/Sao_Paulo'
+
+/** Dia (YYYY-MM-DD) de uma data ISO, no horário de Brasília. */
+export function toDayKey(iso: string | Date): string {
+  return new Date(iso).toLocaleDateString('en-CA', { timeZone: BRASILIA_TIMEZONE })
+}
+
 export function isToday(iso: string): boolean {
-  const d = new Date(iso)
-  const now = new Date()
-  return (
-    d.getFullYear() === now.getFullYear() &&
-    d.getMonth() === now.getMonth() &&
-    d.getDate() === now.getDate()
-  )
+  return toDayKey(iso) === toDayKey(new Date())
 }
 
 export function formatDay(iso: string): string {
   return new Date(iso).toLocaleDateString('pt-BR', {
+    timeZone: BRASILIA_TIMEZONE,
     weekday: 'short',
     day: '2-digit',
     month: 'short',
@@ -37,5 +40,9 @@ export function formatDay(iso: string): string {
 }
 
 export function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+  return new Date(iso).toLocaleTimeString('pt-BR', {
+    timeZone: BRASILIA_TIMEZONE,
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }

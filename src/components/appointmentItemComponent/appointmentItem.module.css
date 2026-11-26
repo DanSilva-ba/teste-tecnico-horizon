@@ -60,3 +60,27 @@
         text-align: left;
     }
 }
+
+/* Destaque temporário da consulta recém-salva (agendada, editada ou remarcada). */
+.highlighted {
+    animation: highlight 4s ease-out;
+}
+
+@keyframes highlight {
+    0%,
+    40% {
+        background-color: rgba(251, 229, 9, 0.16);
+        box-shadow: inset 4px 0 0 #FBE509;
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: inset 4px 0 0 transparent;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .highlighted {
+        animation: none;
+        background-color: rgba(251, 229, 9, 0.16);
+    }
+}

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { Appointment } from '../../models/appointment'
 import {
   canCancel,
@@ -9,11 +10,13 @@ import {
 import ButtonComponent from '../buttonComponent/buttonComponent'
 import StatusBadgeComponent from '../statusBadgeComponent/statusBadgeComponent'
 import { formatDay, formatTime } from '../../utils/date'
+import { maskCpf } from '../../utils/cpf'
 import style from './appointmentItem.module.css'
 
 interface AppointmentItemProps {
   appointment: Appointment
   busy: boolean
+  highlighted?: boolean
   onEdit: (a: Appointment) => void
   onReschedule: (a: Appointment) => void
   onComplete: (a: Appointment) => void
@@ -24,16 +27,23 @@ interface AppointmentItemProps {
 export default function AppointmentItemComponent({
   appointment: a,
   busy,
+  highlighted = false,
   onEdit,
   onReschedule,
   onComplete,
   onCancel,
   onDelete,
 }: AppointmentItemProps) {
-  const scheduledButNotToday = a.status === 'SCHEDULED' && !canComplete(a)
+  const itemRef = useRef<HTMLLIElement>(null)
+
+  useEffect(() => {
+    if (highlighted) itemRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [highlighted])
+
+  const scheduledButNotToday = a.status === 'AGENDADA' && !canComplete(a)
 
   return (
-    <li className={style.item}>
+    <li ref={itemRef} className={`${style.item} ${highlighted ? style.highlighted : ''}`}>
       <div className={style.when}>
         <strong>{formatTime(a.appointmentDate)}</strong>
         <span>{formatDay(a.appointmentDate)}</span>
@@ -42,7 +52,7 @@ export default function AppointmentItemComponent({
       <div className={style.who}>
         <strong>{a.patientName}</strong>
         <span>
-          {a.specialty} · CPF {a.patientCpf}
+          {a.specialty} · CPF {maskCpf(a.patientCpf)}
         </span>
         {a.observations && <em>{a.observations}</em>}
       </div>

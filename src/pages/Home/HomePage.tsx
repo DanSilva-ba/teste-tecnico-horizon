@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AppointmentFormComponent, { type FormMode } from "../../components/appointmentFormComponent/appointmentFormComponent";
 import AppointmentItemComponent from "../../components/appointmentItemComponent/appointmentItemComponent";
 import ButtonComponent from "../../components/buttonComponent/buttonComponent";
@@ -17,6 +17,7 @@ import {
 } from "../../models/appointment";
 import { appointmentService } from "../../service/appointmentService";
 import { getErrorMessages } from "../../service/http";
+import { formatDay, formatTime } from "../../utils/date";
 import style from "./home.module.css";
 
 interface FormState {
@@ -37,6 +38,9 @@ export default function HomePage() {
     const [toDelete, setToDelete] = useState<Appointment | null>(null);
     const [busyId, setBusyId] = useState<number | null>(null);
     const { toast, showToast } = useToast();
+    const [highlightId, setHighlightId] = useState<number | null>(null);
+    const highlightTimer = useRef<number | undefined>(undefined);
+    useEffect(() => () => window.clearTimeout(highlightTimer.current), []);
 
     const hasFilters = status !== "ALL" || search.trim() !== "" || date !== "";
     const items = data?.data ?? [];
@@ -49,16 +53,32 @@ export default function HomePage() {
     }, []);
 
     async function handleFormSubmit(values: AppointmentFormValues) {
+        const mode = form?.mode ?? "create";
         const target = form?.appointment;
-        if (form?.mode === "edit" && target) await appointmentService.update(target.id, values);
-        else if (form?.mode === "reschedule" && target)
-            await appointmentService.reschedule(target.id, values.appointmentDate);
-        else await appointmentService.create(values);
+        let saved: Appointment;
+        if (mode === "edit" && target) saved = await appointmentService.update(target.id, values);
+        else if (mode === "reschedule" && target)
+            saved = await appointmentService.reschedule(target.id, values.appointmentDate);
+        else saved = await appointmentService.create(values);
 
-        const messages = { create: "Consulta agendada.", edit: "Consulta atualizada.", reschedule: "Consulta remarcada." };
-        showToast(messages[form?.mode ?? "create"]);
+        const when = `${formatDay(saved.appointmentDate)} às ${formatTime(saved.appointmentDate)}`;
+        const messages = {
+            create: `Consulta agendada para ${when}.`,
+            edit: "Consulta atualizada.",
+            reschedule: `Consulta remarcada para ${when}.`,
+        };
+        showToast(messages[mode]);
         setForm(null);
-        reload();
+        await showAppointment(saved.id);
+    }
+
+    async function showAppointment(id: number) {
+        const targetPage = await appointmentService.pageOf(id, filters).catch(() => null);
+        if (targetPage && targetPage !== page) setPage(targetPage);
+        else reload();
+        setHighlightId(id);
+        window.clearTimeout(highlightTimer.current);
+        highlightTimer.current = window.setTimeout(() => setHighlightId(null), 4000);
     }
 
     async function runAction(a: Appointment, action: () => Promise<unknown>, successMessage: string) {
@@ -132,6 +152,7 @@ export default function HomePage() {
                                 key={a.id}
                                 appointment={a}
                                 busy={busyId === a.id}
+                                highlighted={highlightId === a.id}
                                 onEdit={(x) => setForm({ mode: "edit", appointment: x })}
                                 onReschedule={(x) => setForm({ mode: "reschedule", appointment: x })}
                                 onComplete={(x) => runAction(x, () => appointmentService.complete(x.id), "Consulta marcada como realizada.")}
