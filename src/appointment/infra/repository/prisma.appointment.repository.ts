@@ -7,7 +7,6 @@ import { UpdateAppointmentStatus } from "../../domain/dtos/update.appointment.st
 import { AppointmentNotFound } from "../exceptions/not.found.js";
 import { UpdateAppointment } from "../../domain/dtos/update.appointment.js";
 import { RescheduleAppointment } from "../../domain/dtos/reschedule.appointment.js";
-import { formatDate } from "../../../utils/date/date.js";
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepositoryAbs {
@@ -23,20 +22,16 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryAbs {
 
 
     async updateAppointmentById(param: UpdateAppointment): Promise<Appointment> {
-        const response = await this.prismaService.appointment.update({where: {id: param.id}, data: {
-            patientCpf: param.patientCpf,
+        return this.prismaService.appointment.update({
+            where: { id: param.id },
+            data: {
             patientName: param.patientName,
-            appointmentDateAndTime: new Date(param.appointmentDateAndTime),
+            patientCpf: param.patientCpf?.replace(/\D/g, ''),
+            appointmentDate: param.appointmentDateAndTime ? new Date(param.appointmentDateAndTime) : undefined,
             specialty: param.specialty,
-            observations: param.observations,
-            status: param.status,   
-        }})
-
-        if(!response) {
-            throw new AppointmentNotFound();
-        }
-
-        return response;
+            notes: param.observations,
+            },
+        });
     }
 
     async findById(id: number): Promise<Appointment> {

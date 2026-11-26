@@ -32,5 +32,4 @@ COPY --from=builder /app/prisma7.config.ts ./
 
 EXPOSE 3000
 
-# Aplica as migrações (incluindo os 70 registros) e sobe a API
 CMD ["sh", "-c", "npx prisma migrate deploy --config prisma7.config.ts && node dist/main.js"]

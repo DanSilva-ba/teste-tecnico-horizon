@@ -45,9 +45,9 @@ Exemplo de um `.env` preenchido:
 ```dotenv
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
-DATABASE_NAME=agendamento
-DATABASE_USER=postgres
-DATABASE_PASSWORD=sua_senha
+DATABASE_NAME=nome_do_banco_de_dados
+DATABASE_USER=usuario_do_banco_de_dados
+DATABASE_PASSWORD=senha_do_banco_de_dados
 DATABASE_URL="postgresql://postgres:sua_senha@localhost:5432/agendamento?schema=public"
 ```
 
