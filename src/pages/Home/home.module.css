@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+}
+
+.box__title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1%;
+    width: auto;
+    margin-left: 2%;
+    margin-top: 3%;
+}
+
+.box__title > .yellow__line {
+    background-color: #FBE509;
+    width: 20px;
+    height: 50px;
+}
+
+.box__title  h1{
+    color:#FFFFFF;
+}
+
+.box__title  p{
+    color:#F7F7F7;
+}
+

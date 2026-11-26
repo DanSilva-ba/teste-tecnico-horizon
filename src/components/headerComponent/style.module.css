@@ -1,0 +1,35 @@
+.header {
+    background-color: #000000;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: center;
+}
+
+.header > .actions {
+    display: flex;
+    width: 95%;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px;
+}
+
+.header .actions > button {
+    background-color: #FBE509;
+    border: 0;
+    height: 50px;
+    width: 150px;
+    font-weight: 600;
+    border-radius: 5px;
+}
+
+
+.yellow__bar {
+    background-color: #FBE509; 
+    width: 100%;
+    height: 10px;
+    position: absolute;
+    bottom: 0;
+}
