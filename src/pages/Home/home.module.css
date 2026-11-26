@@ -1,28 +1,77 @@
-* {
-    margin: 0;
+.container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
 }
 
 .box__title {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 1%;
-    width: auto;
-    margin-left: 2%;
-    margin-top: 3%;
+    gap: 14px;
+    margin-top: 32px;
 }
 
 .box__title > .yellow__line {
     background-color: #FBE509;
-    width: 20px;
-    height: 50px;
+    width: 12px;
+    align-self: stretch;
+    min-height: 50px;
 }
 
-.box__title  h1{
-    color:#FFFFFF;
+.box__title h1 {
+    color: #FFFFFF;
+    font-size: 1.75rem;
+    letter-spacing: -0.02em;
 }
 
-.box__title  p{
-    color:#F7F7F7;
+.box__title p {
+    margin-top: 4px;
+    color: #F7F7F7;
 }
 
+.box__list__appointments {
+    background-color: #141414;
+    min-height: 320px;
+    border: 1px solid #2e2e2e;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.loading .list {
+    opacity: 0.5;
+}
+
+.list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex: 1;
+}
+
+.list > li:last-child {
+    border-bottom: 0;
+}
+
+.empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 48px 20px;
+    color: #a9a9a9;
+    text-align: center;
+}
+
+.empty strong {
+    color: #FFFFFF;
+    font-size: 1.125rem;
+}
+
+.empty p {
+    margin: 0;
+}

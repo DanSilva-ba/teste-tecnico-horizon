@@ -1,75 +1,77 @@
-# React + TypeScript + Vite
+# Horizon – Agendamento de consultas (front-end)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface do Sistema de Agendamento de Consultas, feita em React + TypeScript + Vite, com a identidade visual Horizon.
+Consome a API REST do projeto de back-end (NestJS).
 
-Currently, two official plugins are available:
+## Como rodar
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Requisitos: Node.js 20 ou superior e o back-end em execução.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+cp .env.example .env      # no Windows: copy .env.example .env
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+A aplicação abre em `http://localhost:5173`. A variável `VITE_API_URL` (em `.env`) aponta para a API e vale
+`http://localhost:3000` por padrão. O back-end precisa liberar CORS para a origem do front-end.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Outros comandos:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Comando | O que faz |
+|---|---|
+| `npm run build` | Verifica os tipos e gera a versão de produção em `dist/` |
+| `npm run lint` | Roda o ESLint |
+| `npm run preview` | Serve a versão de produção localmente |
 
+## Funcionalidades
+
+- Agendar, editar e remarcar consultas.
+- Marcar como realizada, cancelar e excluir (com confirmação).
+- Listagem paginada (5 por página, botões **Anteriores** / **Ver mais**) com filtros por nome/CPF, status e data.
+- Formulário com validação antes do envio; erros do servidor aparecem em português, sem detalhes internos.
+
+## Regras refletidas na interface
+
+A tela nunca oferece uma ação que a regra de negócio vai recusar. O servidor continua sendo a fonte da verdade.
+
+| Status | Ações disponíveis |
+|---|---|
+| Agendada | Editar, Remarcar, Cancelar, Excluir. **Marcar como realizada** só aparece no dia da consulta |
+| Realizada | Excluir |
+| Cancelada | Excluir |
+
+Validações do formulário: nome de 3 a 150 caracteres; CPF no formato `000.000.000-00` (máscara automática, sem
+validar dígitos); data e hora obrigatórias e não passadas; especialidade/motivo de 3 a 100 caracteres;
+observações opcionais, até 1.000 caracteres.
+
+## Contrato esperado da API
+
+Os caminhos ficam centralizados em `src/service/appointmentService.ts`.
+
+| Método e rota | Uso |
+|---|---|
+| `GET /appointments?page&limit&status&search&date` | Lista paginada. Resposta: `{ data, meta: { page, limit, total, totalPages } }` |
+| `POST /appointments` | Agenda |
+| `PATCH /appointments/:id` | Edita |
+| `PATCH /appointments/:id/reschedule` | Remarca (`appointmentDateAndTime`) |
+| `PATCH /appointments/:id/complete` | Marca como realizada |
+| `PATCH /appointments/:id/cancel` | Cancela |
+| `DELETE /appointments/:id` | Exclui (204) |
+
+Corpo de criação e edição:
+`{ patientName, patientCpf, appointmentDateAndTime (ISO 8601), specialty, observations? }`.
+Status usados: `SCHEDULED`, `COMPLETED`, `CANCELED`. Erros devem vir no formato do Nest:
+`{ statusCode, message: string | string[] }`.
+
+## Estrutura
+
+```
+src/
+├── components/   # componentes de interface, cada um na sua pasta com o CSS Module
+├── hooks/        # useAppointments (busca) e useToast (avisos)
+├── models/       # tipos e regras de negócio da interface (appointmentRules)
+├── pages/Home/   # tela principal, que orquestra filtros, lista, formulário e ações
+├── service/      # cliente HTTP (http.ts) e chamadas da API (appointmentService.ts)
+└── utils/        # datas, máscara de CPF e validação do formulário
 ```

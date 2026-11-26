@@ -1,29 +1,48 @@
-   .box__filter__buttons{
-        width: 100%;
-        height: 50px;
-        margin-top: 3%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-around;
-   }
-
-
-.filter__button {
-    background-color: #141414;
-    border: 0.1rem solid;
-    border-color: #FFFFFF;
-    width: 150px;
-    height: 50px;
-    color: white;
-    text-align: center;
+.box__filter__buttons {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    border-radius: 20px;
+    gap: 12px;
+    margin: 24px 0 16px;
 }
 
+.tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
 
-   .box__filter__buttons > input{
-       width: 40%;
-   }
+.filter__button {
+    min-height: 44px;
+    padding: 0 20px;
+    border: 0.1rem solid #FFFFFF;
+    border-radius: 20px;
+    background-color: #141414;
+    color: #FFFFFF;
+    font: inherit;
+    cursor: pointer;
+}
+
+/* Filtro ativo: amarelo com texto preto. */
+.filter__button[aria-pressed='true'] {
+    background-color: #FBE509;
+    border-color: #FBE509;
+    color: #000000;
+    font-weight: 700;
+}
+
+.search,
+.date {
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1.5px solid #4a4a4a;
+    border-radius: 6px;
+    background-color: #141414;
+    color: #FFFFFF;
+    font: inherit;
+    color-scheme: dark;
+}
+
+.search {
+    flex: 1 1 240px;
+}

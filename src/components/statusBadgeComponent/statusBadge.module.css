@@ -1,0 +1,25 @@
+.badge {
+    display: inline-block;
+    width: max-content;
+    padding: 3px 12px;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.SCHEDULED {
+    background-color: #FBE509;
+    color: #000000;
+}
+
+.COMPLETED {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+.CANCELED {
+    border-color: #4a4a4a;
+    color: #a9a9a9;
+    text-decoration: line-through;
+}

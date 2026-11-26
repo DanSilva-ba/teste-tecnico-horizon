@@ -1,35 +1,25 @@
 .header {
     background-color: #000000;
     width: 100%;
-    height: 100px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    justify-content: center;
 }
 
 .header > .actions {
     display: flex;
-    width: 95%;
     align-items: center;
     justify-content: space-between;
-    margin: 20px;
+    gap: 16px;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.header .actions > button {
-    background-color: #FBE509;
-    border: 0;
-    height: 50px;
-    width: 150px;
-    font-weight: 600;
-    border-radius: 5px;
+.header .actions > img {
+    height: 44px;
+    max-width: 55vw;
 }
-
 
 .yellow__bar {
-    background-color: #FBE509; 
+    background-color: #FBE509;
     width: 100%;
     height: 10px;
-    position: absolute;
-    bottom: 0;
 }

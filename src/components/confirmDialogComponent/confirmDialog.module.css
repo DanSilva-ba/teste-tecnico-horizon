@@ -1,0 +1,16 @@
+.message {
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.error {
+    margin: 0 0 16px;
+    color: var(--error);
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

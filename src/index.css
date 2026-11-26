@@ -1,5 +1,31 @@
-html, body {
-  margin: 0 auto;
-  padding: 0;
-  background-color: #000000;
+:root {
+    --error: #ff8a8a;
+    font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000000;
+    color: #FFFFFF;
+    line-height: 1.5;
+}
+
+h1,
+h2,
+p {
+    margin: 0;
+}
+
+:focus-visible {
+    outline: 3px solid #FBE509;
+    outline-offset: 2px;
 }

@@ -1,0 +1,51 @@
+.button {
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.small {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 0.875rem;
+}
+
+/* O amarelo é cor de ação e o texto sobre ele é sempre preto. */
+.primary {
+    background-color: #FBE509;
+    color: #000000;
+}
+
+.primary:hover:not(:disabled) {
+    background-color: #fff06a;
+}
+
+.secondary {
+    background-color: transparent;
+    border-color: #4a4a4a;
+    color: #FFFFFF;
+    font-weight: 500;
+}
+
+.secondary:hover:not(:disabled) {
+    border-color: #FFFFFF;
+}
+
+.danger {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+.danger:hover:not(:disabled) {
+    background-color: #F7F7F7;
+}
