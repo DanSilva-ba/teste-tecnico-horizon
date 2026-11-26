@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put } 
 import type { ScheduleAppointmentDTO } from '../domain/dtos/appointment.js';
 import { AppointmentServiceAbs } from '../domain/services/appointment.service.abs.js';
 import type { UpdateAppointmentStatus } from '../domain/dtos/update.appointment.status.js';
+import type { RescheduleAppointment } from '../domain/dtos/reschedule.appointment.js';
 
 
 
@@ -28,5 +29,10 @@ export class AppointmentController {
     @Put()
     async updateAppointmentStatus(@Body() param: UpdateAppointmentStatus){
          return await this.schuduledAppointmentService.updateAppointmentStatus(param);
+    }
+
+    @Put('rescheduleAppointment')
+    async rescheduleAppointment(@Body() param: RescheduleAppointment){
+         return await this.schuduledAppointmentService.rescheduleAppointment(param);
     }
 }

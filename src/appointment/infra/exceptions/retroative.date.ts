@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { formatDate } from '../../utils/date/date.js';
+import { formatDate } from '../../../utils/date/date.js';
 
 export class RetroactiveDateException extends HttpException {
   constructor(

@@ -1,132 +1,127 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Horizon – Agendamento de consultas (back-end)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST para agendamento de consultas, feita com **NestJS**, **Prisma** e **PostgreSQL**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Requisitos
 
-## Description
+- **Via Docker:** Docker e Docker Compose.
+- **Via terminal (cmd):** Node.js **26.13.1** (versão usada no desenvolvimento) e PostgreSQL 16 ou superior em execução.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Variáveis de ambiente
 
-## Project setup
+Antes de rodar, por qualquer um dos dois caminhos, **renomeie o arquivo `.env.example` para `.env`** e preencha as variáveis:
 
-```bash
-$ npm install
+| Variável | Descrição | Exemplo |
+|---|---|---|
+| `DATABASE_HOST` | Host do PostgreSQL | `localhost` |
+| `DATABASE_PORT` | Porta do PostgreSQL | `5432` |
+| `DATABASE_NAME` | Nome do banco | `agendamento` |
+| `DATABASE_USER` | Usuário do banco | `postgres` |
+| `DATABASE_PASSWORD` | Senha do banco | `sua_senha` |
+| `DATABASE_URL` | URL de conexão usada pelo Prisma (veja abaixo) | `postgresql://postgres:sua_senha@localhost:5432/agendamento?schema=public` |
+| `PORT` | Porta da API (opcional, padrão `3000`) | `3000` |
+| `DATABASE_EXPOSED_PORT` | Só no Docker: porta do banco no seu computador (opcional, padrão `5433`) | `5433` |
+
+### Preenchendo a `DATABASE_URL`
+
+A `DATABASE_URL` **não é montada automaticamente**. Escreva a URL completa, com os mesmos valores das variáveis acima, neste formato:
+
+```
+postgresql://USUARIO:SENHA@HOST:PORTA/NOME_DO_BANCO?schema=public
 ```
 
-## Compile and run the project
+Cada parte corresponde a uma variável:
 
-```bash
-# development
-$ npm run start
+| Trecho da URL | Variável |
+|---|---|
+| `USUARIO` | `DATABASE_USER` |
+| `SENHA` | `DATABASE_PASSWORD` |
+| `HOST` | `DATABASE_HOST` |
+| `PORTA` | `DATABASE_PORT` |
+| `NOME_DO_BANCO` | `DATABASE_NAME` |
 
-# watch mode
-$ npm run start:dev
+Exemplo de um `.env` preenchido:
 
-# production mode
-$ npm run start:prod
+```dotenv
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=agendamento
+DATABASE_USER=postgres
+DATABASE_PASSWORD=sua_senha
+DATABASE_URL="postgresql://postgres:sua_senha@localhost:5432/agendamento?schema=public"
 ```
 
-## Run tests
+> **Importante:**
+> - Se você alterar alguma das variáveis do banco, atualize também a `DATABASE_URL`.
+> - Se a senha tiver caracteres especiais (`@`, `#`, `/`, `:`), eles precisam ser codificados na URL. Por exemplo, `@` vira `%40`.
+> - **No Docker**, a `DATABASE_URL` do `.env` é ignorada: o `docker-compose.yaml` monta a URL a partir das outras variáveis, usando o host `db`. Ela só é usada quando a API roda pelo terminal.
+## Rodando via Docker
 
-```bash
-# unit tests
-$ npm run test
+Com o `.env` preenchido, na raiz do projeto:
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```No terminal, rodar o seguinte comando:
+    docker compose up --build
 ```
 
-## Deployment
+O Docker sobe dois containers:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- **`agendamento-db`:** PostgreSQL 16, acessível no seu computador em `localhost:5433` (ou na porta definida em `DATABASE_EXPOSED_PORT`).
+- **`agendamento-api`:** a API, em `http://localhost:3000`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Ao iniciar, a API aplica as migrações automaticamente, incluindo a carga inicial de **70 consultas de exemplo**. No Docker, a `DATABASE_URL` é montada pelo próprio `docker-compose.yaml` a partir das outras variáveis. Por isso, `DATABASE_HOST` e `DATABASE_URL` do `.env` não são usadas nesse modo.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Comandos úteis:
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+| Comando | O que faz |
+|---|---|
+| `docker compose up -d --build` | Sobe em segundo plano |
+| `docker compose logs -f api` | Acompanha os logs da API |
+| `docker compose down` | Para os containers e mantém os dados |
+| `docker compose down -v` | Para os containers e **apaga o banco**. No próximo `up`, as migrações e os 70 registros são recriados |
 
-## Observability
+## Rodando via terminal (cmd)
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-To add it to this project, run this and approve the code it prints at [observe.nestjs.com/link](https://observe.nestjs.com/link) - signing up for free if you have no account:
+Com o PostgreSQL rodando e o `.env` preenchido (aqui, a `DATABASE_URL` precisa apontar para o seu banco local):
 
 ```bash
-$ npx @nestjs/observe link
+# 1. Instalar as dependências
+npm install
+
+# 2. Gerar o client do Prisma (a pasta src/generated não é versionada)
+npx prisma generate --config prisma7.config.ts
+
+# 3. Criar as tabelas e inserir os 70 registros de exemplo
+npx prisma migrate deploy --config prisma7.config.ts
+
+# 4. Subir a API em modo de desenvolvimento
+npm run start:dev
 ```
 
-It installs `@nestjs/observe`, wires it into `AppModule` and `main.ts`, and writes the app key and secret into `.env`, which every `nest start` script (`start`, `start:dev`, `start:debug`) then loads. In production, set `OBSERVE_APP_KEY` and `OBSERVE_APP_SECRET` in the environment instead.
+A API fica disponível em `http://localhost:3000`.
 
-Or do it by hand:
+Outros comandos:
 
-```bash
-$ npm install @nestjs/observe
-```
+| Comando | O que faz |
+|---|---|
+| `npm run build` | Compila para `dist/` |
+| `npm run start:prod` | Roda a versão compilada |
+| `npm run test` | Roda os testes |
+| `npm run lint` | Roda o linter |
+| `npx prisma migrate reset --config prisma7.config.ts` | **Apaga o banco** e reaplica as migrações com os dados de exemplo |
 
-Then follow the [setup guide](https://docs.nestjs.com/observability/sdk) - it takes a single import and an app key.
+## Dados iniciais
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+A migração `20261126090000_seed_appointments` insere 70 consultas com datas **relativas ao momento em que é executada** (horário de Brasília):
+- 22 realizadas e 8 canceladas nos últimos 60 dias;
+- 6 agendadas para o dia da execução (permitem testar "marcar como realizada");
+- 28 agendadas e 6 canceladas nos próximos 60 dias.
 
-## Resources
+## Rotas
 
-Check out a few resources that may come in handy when working with NestJS:
+| Método e rota | Descrição |
+|---|---|
+| `GET /appointment` | Lista todas as consultas |
+| `POST /appointment` | Agenda uma consulta |
+| `PUT /appointment` | Altera o status. Corpo: `{ id, status }` |
+| `DELETE /appointment/:id` | Exclui uma consulta |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

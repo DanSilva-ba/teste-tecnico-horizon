@@ -4,9 +4,9 @@ export interface ScheduleAppointmentDTO {
     patientName: string;
     patientCpf: string;
     appointmentDateAndTime: Date;
-    specialty: string; /// TODO: criar um enum de especialidades
+    specialty: string; 
     observations: string;
-    status: AppointmentStatus; /// TODO: criar um enum de status
+    status: AppointmentStatus; 
     createdAt: Date;
     updatedAt: Date;
 }

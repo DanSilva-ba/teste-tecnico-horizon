@@ -4,12 +4,41 @@ import { AppointmentCreateInput } from "../../../generated/prisma/models.js";
 import { AppointmentRepositoryAbs } from "../../domain/repository/appointment.repository.js";
 import { PrismaService } from "../../../prisma/prisma.service.js";
 import { UpdateAppointmentStatus } from "../../domain/dtos/update.appointment.status.js";
-import { AppointmentNotFound } from "../../exceptions/not.found.js";
+import { AppointmentNotFound } from "../exceptions/not.found.js";
+import { UpdateAppointment } from "../../domain/dtos/update.appointment.js";
+import { RescheduleAppointment } from "../../domain/dtos/reschedule.appointment.js";
+import { formatDate } from "../../../utils/date/date.js";
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepositoryAbs {
 
     constructor(private prismaService: PrismaService){}
+
+    async rescheduleAppointment(param: RescheduleAppointment): Promise<Appointment> {
+        return this.prismaService.appointment.update({
+            where: { id: param.id },
+            data: { appointmentDate: new Date(param.date) },
+        });
+    }
+
+
+    async updateAppointmentById(param: UpdateAppointment): Promise<Appointment> {
+        const response = await this.prismaService.appointment.update({where: {id: param.id}, data: {
+            patientCpf: param.patientCpf,
+            patientName: param.patientName,
+            appointmentDateAndTime: new Date(param.appointmentDateAndTime),
+            specialty: param.specialty,
+            observations: param.observations,
+            status: param.status,   
+        }})
+
+        if(!response) {
+            throw new AppointmentNotFound();
+        }
+
+        return response;
+    }
+
     async findById(id: number): Promise<Appointment> {
         const response = await this.prismaService.appointment.findFirst({where: {id}})
 
@@ -21,11 +50,18 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryAbs {
     }
 
     async updateAppointmentStatus(param: UpdateAppointmentStatus): Promise<Appointment> {
-        return await this.prismaService.appointment.update({where: {id: param.id}, data: {status: param.status}})
+        const response = await this.prismaService.appointment.update({where: {id: param.id}, data: {status: param.status}});
+
+        if(!response) {
+            throw new AppointmentNotFound();
+        }
+
+        return response;
     }
 
     async findAppointmentByPatientCpfAndAppointmentDate(data: AppointmentCreateInput): Promise<Appointment | null> {
-        return this.prismaService.appointment.findFirst({where: {patientCpf: data.patientCpf, appointmentDate: data.appointmentDate,},});
+        const response = await this.prismaService.appointment.findFirst({where: {patientCpf: data.patientCpf, appointmentDate: data.appointmentDate}});
+        return response;
     }
 
     async create(data: AppointmentCreateInput): Promise<Appointment> {
@@ -36,11 +72,6 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryAbs {
         return await this.prismaService.appointment.findMany();
     }
     
-    update(): Promise<Appointment> {
-        console.log("chegou no repositorio")
-        throw new Error("Method not implemented.");
-    }
-
     async deleteById(id: number): Promise<Appointment> {
         return await this.prismaService.appointment.delete({where: {
             id: id

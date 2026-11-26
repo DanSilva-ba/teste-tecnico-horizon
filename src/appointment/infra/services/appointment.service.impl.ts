@@ -4,20 +4,25 @@ import { ScheduleAppointmentDTO } from "../../domain/dtos/appointment.js";
 import { AppointmentRepositoryAbs } from "../../domain/repository/appointment.repository.js";
 import { AppointmentMapper } from "../mapper/appointment.mapper.js";
 import { AppointmentResponseDTO } from "../../domain/dtos/appointment.response.js";
-import { Appointment } from "../../../generated/prisma/client.js";
-import { DuplicateAppointmentException } from "../../exceptions/duplicate.appointment.js";
-import { RetroactiveDateException } from "../../exceptions/retroative.date.js";
+import { DuplicateAppointmentException } from "../exceptions/duplicate.appointment.js";
+import { RetroactiveDateException } from "../exceptions/retroative.date.js";
 import { UpdateAppointmentStatus } from "../../domain/dtos/update.appointment.status.js";
 import { isToday } from "../../../utils/date/date.js";
-import { InvalidCompletionDateException } from "../../exceptions/invalid.completion.date.exception.js";
-import { AppointmentNotEditableException } from "../../exceptions/appointment.not.editable.exception.js";
+import { InvalidCompletionDateException } from "../exceptions/invalid.completion.date.exception.js";
+import { AppointmentNotEditableException } from "../exceptions/appointment.not.editable.exception.js";
+import { UpdateAppointment } from "../../domain/dtos/update.appointment.js";
+import { RescheduleAppointment } from "../../domain/dtos/reschedule.appointment.js";
 
 @Injectable()
 export class AppointmentServiceImpl implements AppointmentServiceAbs{
     constructor(private appointmentRepository: AppointmentRepositoryAbs, private appointmentMapper: AppointmentMapper){}
 
-    async updateAppointmentById(param: ScheduleAppointmentDTO): Promise<AppointmentResponseDTO> {
-        throw new Error("Method not implemented.");
+    async rescheduleAppointment(param: RescheduleAppointment): Promise<AppointmentResponseDTO> {
+        return this.appointmentMapper.toResponse(await this.appointmentRepository.rescheduleAppointment(param))
+    }
+
+    async updateAppointmentById(param: UpdateAppointment): Promise<AppointmentResponseDTO> {
+        return this.appointmentMapper.toResponse(await this.appointmentRepository.updateAppointmentById(param));
     }
 
     ////// Atualiza o status do agendamento
@@ -42,7 +47,7 @@ export class AppointmentServiceImpl implements AppointmentServiceAbs{
 
     /////// Busca todos os agendamentos
     async findAllAppointment(): Promise<AppointmentResponseDTO[]> {
-        return await this.appointmentMapper.toResponseList(await this.appointmentRepository.findAll())
+        return this.appointmentMapper.toResponseList(await this.appointmentRepository.findAll())
     }
 
     ///////Realiza um novo agendamento
