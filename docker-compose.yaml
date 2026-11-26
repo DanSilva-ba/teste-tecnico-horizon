@@ -22,6 +22,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # O build usa a rede do computador (a mesma que baixa as imagens com sucesso)
+      network: host
     environment:
       DATABASE_URL: postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:5432/${DATABASE_NAME}?schema=public
       PORT: ${PORT:-3000}
