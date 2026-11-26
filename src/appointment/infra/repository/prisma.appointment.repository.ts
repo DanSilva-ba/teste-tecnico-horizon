@@ -3,18 +3,37 @@ import { Appointment } from "../../../generated/prisma/client.js";
 import { AppointmentCreateInput } from "../../../generated/prisma/models.js";
 import { AppointmentRepositoryAbs } from "../../domain/repository/appointment.repository.js";
 import { PrismaService } from "../../../prisma/prisma.service.js";
+import { UpdateAppointmentStatus } from "../../domain/dtos/update.appointment.status.js";
+import { AppointmentNotFound } from "../../exceptions/not.found.js";
 
 @Injectable()
 export class PrismaAppointmentRepository implements AppointmentRepositoryAbs {
 
     constructor(private prismaService: PrismaService){}
+    async findById(id: number): Promise<Appointment> {
+        const response = await this.prismaService.appointment.findFirst({where: {id}})
 
-    create(data: AppointmentCreateInput): Promise<Appointment> {
-        return this.prismaService.appointment.create({data});
+        if(!response) {
+            throw new AppointmentNotFound();
+        }
+
+        return response;
     }
 
-    findAll(): Promise<Appointment[]> {
-        return this.prismaService.appointment.findMany();
+    async updateAppointmentStatus(param: UpdateAppointmentStatus): Promise<Appointment> {
+        return await this.prismaService.appointment.update({where: {id: param.id}, data: {status: param.status}})
+    }
+
+    async findAppointmentByPatientCpfAndAppointmentDate(data: AppointmentCreateInput): Promise<Appointment | null> {
+        return this.prismaService.appointment.findFirst({where: {patientCpf: data.patientCpf, appointmentDate: data.appointmentDate,},});
+    }
+
+    async create(data: AppointmentCreateInput): Promise<Appointment> {
+        return await this.prismaService.appointment.create({data});
+    }
+
+    async findAll(): Promise<Appointment[]> {
+        return await this.prismaService.appointment.findMany();
     }
     
     update(): Promise<Appointment> {
@@ -22,9 +41,11 @@ export class PrismaAppointmentRepository implements AppointmentRepositoryAbs {
         throw new Error("Method not implemented.");
     }
 
-    deleteById(id: number): Promise<Appointment> {
-        return this.prismaService.appointment.delete({where: {
+    async deleteById(id: number): Promise<Appointment> {
+        return await this.prismaService.appointment.delete({where: {
             id: id
         }})
-    }  
+    }
+
+    
 }

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Appointment, AppointmentStatus } from "../../../generated/prisma/client.js";
 import { ScheduleAppointmentDTO } from "../../domain/dtos/appointment.js";
-import { AppointmentResponseDTO } from "../../domain/dtos/appointment.response.dto.js";
+import { AppointmentResponseDTO } from "../../domain/dtos/appointment.response.js";
 
 type NewAppointment = Omit<Appointment, "id" | "createdAt" | "updatedAt">;
 
